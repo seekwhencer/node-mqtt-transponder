@@ -83,8 +83,7 @@ export default class TopicSource extends MODULECLASS {
                         |> sort(columns: ["time"])`;
 
             const query = fluxQuery(topic);
-
-            proms.push(this.queryDB(query).then(rows => {
+            const prom = this.queryDB(query).then(rows => {
 
                 // preset the source topic value
                 if (rows.length > 0)
@@ -93,7 +92,9 @@ export default class TopicSource extends MODULECLASS {
                 return Promise.resolve();
             }).catch(error => {
                 ERROR(this.label, 'INFLUX ERROR', error);
-            }));
+            });
+
+            proms.push(prom);
         });
 
         return Promise.all(proms);

@@ -50,6 +50,7 @@
     ./setup.sh
     ```
 
+
 ## Config
 
 duplicate *.example files as *
@@ -58,14 +59,12 @@ duplicate *.example files as *
 - edit the file `server/config/default.conf`
 - edit the file `mosquitto/mosquitto.conf`
 
-## Run
 
-- ```bash
-  docker-compose up -d
-  ```
-  > Now open: http://YOURHOST:3000
-
-## Influx
+## Influx setup
+- start influx
+    ```bash
+    docker-compose -f docker-compose-influx.yml up -d
+    ```
 
 - get the auth token
 
@@ -74,3 +73,11 @@ duplicate *.example files as *
     ```
 
 - put the token in: `.env` as `INFLUXDB_TOKEN`
+
+
+## Run
+
+- ```bash
+  docker-compose up -d
+  ```
+  > Now open: http://YOURHOST:3000

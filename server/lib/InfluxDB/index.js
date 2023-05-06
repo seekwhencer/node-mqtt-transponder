@@ -9,13 +9,13 @@ export default class influxDB extends MODULECLASS {
 
         return new Promise((resolve, reject) => {
             this.label = 'INFLUX CLIENT';
-            this.debug = false;
+            this.debug = true;
             LOG(this.label, 'INIT', `| DEBUG: ${this.debug}`);
 
             this.parent = parent;
 
             this.options = {
-                url: `http://influxdb:${INFLUXDB_PORT}`,
+                url: `http://${SERVER_INFLUXDB_HOST}:${SERVER_INFLUXDB_PORT}`,
                 token: INFLUXDB_TOKEN
             };
 
