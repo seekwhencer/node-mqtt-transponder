@@ -2,14 +2,11 @@ version: "3.6"
 
 volumes:
   influxdb:
-    external:
-      name: ${PROJECT_NAME}_influxdb
+    name: ${PROJECT_NAME}_influxdb
   influxdb2:
-    external:
-      name: ${PROJECT_NAME}_influxdb2
+    name: ${PROJECT_NAME}_influxdb2
   influxetc:
-    external:
-      name: ${PROJECT_NAME}_influxetc
+    name: ${PROJECT_NAME}_influxetc
 
 networks:
   proxy_default:

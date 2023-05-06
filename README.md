@@ -64,3 +64,13 @@ duplicate *.example files as *
   docker-compose up -d
   ```
   > Now open: http://YOURHOST:3000
+
+## Influx
+
+- get the auth token
+
+    ```bash
+    docker exec node-mqtt-transponder_influxdb2 influx auth list --hide-headers | cut -f 3
+    ```
+
+- put the token in: `.env` as `INFLUXDB_TOKEN`
