@@ -1,0 +1,12 @@
+.idea/**/*
+node_modules
+.hot
+npm-debug.log
+
+.env
+server/config/**/*
+tunnel/**/*
+
+!.gitkeep
+!**/*.example
+!server/config/types.json

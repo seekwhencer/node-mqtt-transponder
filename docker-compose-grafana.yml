@@ -1,0 +1,33 @@
+version: "3.6"
+
+volumes:
+  grafana:
+    name: ${PROJECT_NAME}_grafana
+
+networks:
+  proxy_default:
+    external: true
+
+  node-mqtt-transponder:
+    external: false
+    name: ${PROJECT_NAME}
+
+services:
+  node-mqtt-transponder_grafana:
+    restart: always
+    image: grafana/grafana-enterprise:9.5.0
+    container_name: ${PROJECT_NAME}_grafana
+    user: '104'
+    networks:
+      - node-mqtt-transponder
+      - proxy_default
+    environment:
+      # grafana
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-piechart-panel,grafana-polystat-panel,briangann-gauge-panel
+      - GF_FEATURE_TOGGLES_ENABLE=publicDashboards
+      # proxy
+      - VIRTUAL_HOST=grafana.${PROJECT_NAME}.${HOST_NAME}
+      - VIRTUAL_PORT=${GRAFANA_PORT}
+      - HOST_IP=${HOST_IP}
+    volumes:
+      - grafana:/var/lib/grafana

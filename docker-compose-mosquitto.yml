@@ -1,0 +1,35 @@
+version: "3.6"
+
+# https://github.com/vvatelot/mosquitto-docker-compose
+
+volumes:
+  mosquitto:
+    external:
+      name: ${PROJECT_NAME}_mosquitto
+
+networks:
+  proxy_default:
+    external: true
+
+  node-mqtt-transponder:
+    external: false
+    name: ${PROJECT_NAME}
+
+services:
+  node-mqtt-transponder_mosquitto:
+    restart: always
+    image: eclipse-mosquitto:latest
+    container_name: ${PROJECT_NAME}_mosquitto
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./mosquitto/password.txt:/mosquitto/config/password.txt
+      - ./mosquitto/logs:/mosquitto/log
+      - mosquitto:/mosquitto/data
+    network_mode: host
+    #networks:
+    #  - mqtt_transponder
+    #  - proxy_default
+    #environment:
+    #  - VIRTUAL_HOST=mqtt.${HOST_NAME}
+    #  - VIRTUAL_PORT=${MQTT_PORT}
+    #  - HOST_IP=${HOST_IP}

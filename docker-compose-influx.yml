@@ -1,0 +1,50 @@
+version: "3.6"
+
+volumes:
+  influxdb:
+    external:
+      name: ${PROJECT_NAME}_influxdb
+  influxdb2:
+    external:
+      name: ${PROJECT_NAME}_influxdb2
+  influxetc:
+    external:
+      name: ${PROJECT_NAME}_influxetc
+
+networks:
+  proxy_default:
+    external: true
+
+  node-mqtt-transponder:
+    external: false
+    name: ${PROJECT_NAME}
+
+services:
+  node-mqtt-transponder_influxdb:
+    restart: always
+    image: influxdb:latest
+    container_name: ${PROJECT_NAME}_influxdb
+    networks:
+      - node-mqtt-transponder
+      - proxy_default
+    #    ports:
+    #      - "8083:8083"
+    #      - "8086:8086"
+    #      - "8090:8090"
+    #      - "2003:2003"
+    environment:
+      # new config
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=${INFLUXDB_ADMIN_USER}
+      - DOCKER_INFLUXDB_INIT_PASSWORD=${INFLUXDB_ADMIN_PASSWORD}
+      - DOCKER_INFLUXDB_INIT_ORG=${INFLUXDB_ORG}
+      - DOCKER_INFLUXDB_INIT_BUCKET=${INFLUXDB_BUCKET}
+
+      # proxy
+      - VIRTUAL_HOST=influx.${PROJECT_NAME}.${HOST_NAME}
+      - VIRTUAL_PORT=${INFLUXDB_UI_PORT}
+      - HOST_IP=${HOST_IP}
+    volumes:
+      - influxdb:/var/lib/influxdb
+      - influxdb2:/var/lib/influxdb2
+      - influxetc:/etc/influxdb2
