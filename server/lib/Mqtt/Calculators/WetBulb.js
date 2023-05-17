@@ -5,12 +5,14 @@ export default class WetBulb extends Calculator {
         super(parent, options);
 
         this.name = 'wetbulb';
-        this.label = 'VIRTUAL TOPIC CALCULATOR WET BULB';
+        this.label = 'TOPIC CALCULATOR WET BULB';
         this.debug ? LOG(this.label, 'INIT WITH TOPIC:', this.topic) : null;
     }
 
     // custom calculate function
     calculate() {
+        super.calculate();
+
         this.temperature = false;
         this.humidity = false;
         this.pressure = false;

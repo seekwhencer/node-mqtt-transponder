@@ -1,30 +1,30 @@
 import Calculator from './Calculator.js';
 
-export default class AbsoluteHumidity extends Calculator {
+export default class DewPoint extends Calculator {
     constructor(parent, options) {
         super(parent, options);
 
-        this.name = 'absolutehumidity';
-        this.label = 'VIRTUAL TOPIC CALCULATOR ABSOLUTE HUMIDITY';
+        this.name = 'dewpoint';
+        this.label = 'TOPIC CALCULATOR DEWPOINT';
         this.debug ? LOG(this.label, 'INIT WITH TOPIC:', this.topic) : null;
     }
 
-    // custom calculation
+    // custom calculate function
     calculate() {
-        this.temperature = false;
+        super.calculate();
+
         this.humidity = false;
+        this.temperature = false;
 
         const fields = Object.keys(this.source);
         fields.forEach(f => this[f] = this.values[this.source[f]]);
 
-        if (!this.humidity || !this.temperature || !this.pressure)
+        if (!this.humidity || !this.temperature)
             return;
 
-        // shift values for pm
         this.temperature = parseFloat(this.temperature);
         this.humidity = parseFloat(this.humidity) / 100;    // wants float 0 - 1 range from 0 - 100 %
-        this.pressure = parseFloat(this.pressure) * 100;    // wants pascal from kPa
 
-        this.value = this.pm.GetHumRatioFromRelHum(this.temperature, this.humidity, this.pressure) * 100; // g/m³
+        this.value = this.pm.GetTDewPointFromRelHum(this.temperature, this.humidity);
     }
 }

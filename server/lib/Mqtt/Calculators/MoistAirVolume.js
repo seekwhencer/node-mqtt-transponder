@@ -5,12 +5,14 @@ export default class MoistAirVolume extends Calculator {
         super(parent, options);
 
         this.name = 'moistairvolume';
-        this.label = 'VIRTUAL TOPIC CALCULATOR AIR VOLUME';
+        this.label = 'TOPIC CALCULATOR AIR VOLUME';
         this.debug ? LOG(this.label, 'INIT WITH TOPIC:', this.topic) : null;
     }
 
     // custom calculate function
     calculate() {
+        super.calculate();
+
         this.temperature = false;
         this.humidity = false;
         this.pressure = false;

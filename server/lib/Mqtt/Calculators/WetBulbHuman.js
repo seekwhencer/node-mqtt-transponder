@@ -5,13 +5,15 @@ export default class WetBulbHuman extends Calculator {
         super(parent, options);
 
         this.name = 'wetbulbhuman';
-        this.label = 'VIRTUAL TOPIC CALCULATOR WET BULB HUMAN';
+        this.label = 'TOPIC CALCULATOR WET BULB HUMAN';
         this.max = this.options.max || 42;
         this.debug ? LOG(this.label, 'INIT WITH TOPIC:', this.topic) : null;
     }
 
     // custom calculation
     calculate() {
+        super.calculate();
+
         // create fields
         this.temperature = false;
         this.wetbulb = false;

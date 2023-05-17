@@ -5,7 +5,6 @@ export default class TopicSource extends MODULECLASS {
         this.debug = false;
 
         // the key (prop) is the full topic url
-        // will be set in Mqtt/Topic.js onUpdate()
         this.values = new Proxy({}, {
             get: (target, prop, receiver) => {
                 return target[prop];
@@ -31,7 +30,7 @@ export default class TopicSource extends MODULECLASS {
         this.update(sourceData);
 
         // get latest values from influx database
-        this.initLatestValues();
+        //this.initLatestValues();
 
     }
 
@@ -40,19 +39,35 @@ export default class TopicSource extends MODULECLASS {
     }
 
     setTopic(topic, value) {
+        if (!this.hasTopic(topic))
+            return;
+
         this.values[topic] = value;
+        this.debug ? LOG(this.label, 'SET TOPIC', topic.padEnd(50, '-'), `${this.values[topic]}`.padEnd(10, '-'), 'FOR  > ', this.topic) : null;
     }
 
     update(sourceData) {
+        if (!sourceData)
+            return;
+
         if (typeof sourceData === 'string') this.type = 'single';
         if (typeof sourceData === 'object') this.type = 'field';
         if (Array.isArray(sourceData)) this.type = 'list';
 
         // this is the stored raw data
         this.data = sourceData;
-        //@TODO remove unused fields in this.values[topic]
 
-        this.debug ? LOG(this.label, 'UPDATED', sourceData, this.type, this.data) : null;
+        // setTopics (multiple)
+        this.topics.forEach(topic => {
+            if (this.parent.parent.topics[topic]) {
+                if (!this.values[topic]) {
+                    //LOG('!!!!!', this.topic, topic, `${this.parent.parent.topics[topic].value}`);
+                    this.values[topic] = this.parent.parent.topics[topic].value;
+                }
+            }
+        });
+
+        this.debug ? LOG(this.label, 'UPDATED', `${JSON.stringify(sourceData)}`.padEnd(50, '.'), 'TYPE', this.type, 'DATA', JSON.stringify(this.data)) : null;
     }
 
     // returns a flatten array with all used topic urls
@@ -72,10 +87,17 @@ export default class TopicSource extends MODULECLASS {
         return data;
     }
 
-    initLatestValues() {
+    /*initLatestValues() {
         const proms = [];
 
+        LOG('>>>>>>>>>>LATEST VALUES', this.topic, this.topics);
+
         this.topics.forEach(topic => {
+
+            const existingValue = this.parent.value;
+
+            LOG('>>>>>>>>>>', existingValue);
+            return;
 
             const fluxQuery = topic => `from(bucket:"${INFLUXDB_BUCKET}")
                         |> range(start: -1d)
@@ -83,7 +105,8 @@ export default class TopicSource extends MODULECLASS {
                         |> sort(columns: ["time"])`;
 
             const query = fluxQuery(topic);
-            const prom = this.queryDB(query).then(rows => {
+
+            proms.push(this.queryDB(query).then(rows => {
 
                 // preset the source topic value
                 if (rows.length > 0)
@@ -92,9 +115,7 @@ export default class TopicSource extends MODULECLASS {
                 return Promise.resolve();
             }).catch(error => {
                 ERROR(this.label, 'INFLUX ERROR', error);
-            });
-
-            proms.push(prom);
+            }));
         });
 
         return Promise.all(proms);
@@ -103,6 +124,7 @@ export default class TopicSource extends MODULECLASS {
     queryDB(query) {
         return APP.INFLUXDB.query(query);
     }
+     */
 
     // --------
 
@@ -115,7 +137,7 @@ export default class TopicSource extends MODULECLASS {
     }
 
     get topic() {
-        return this.parent.data.topic;
+        return this.parent.topic;
     }
 
     set topic(val) {

@@ -6,6 +6,7 @@ export default class MqttClient extends MODULECLASS {
 
         return new Promise((resolve, reject) => {
             this.label = 'MQTT CLIENT'
+            this.debug = false;
 
             this.parent = parent;
 
@@ -19,10 +20,13 @@ export default class MqttClient extends MODULECLASS {
             }
 
             this.url = `mqtt://${MQTT_HOST}:${MQTT_PORT}`;
-            LOG(this.label, 'INIT ON', this.url);
+            LOG(this.label, 'INIT | DEBUG:', this.debug, '| ON:', this.url);
 
             // events
-            this.on('connect', () => resolve(this));
+            this.on('connect', () => {
+                this.debug ? LOG(this.label, 'CONNECTED !') : null;
+                resolve(this);
+            });
 
             this.on('message', (topic, buffer) => {
                 this.message(topic, buffer);
@@ -38,6 +42,7 @@ export default class MqttClient extends MODULECLASS {
 
     connect() {
         // connecting
+        this.debug ? LOG(this.label, 'CONNECTING TO:', this.url) : null;
         this.connection = mqtt.connect(this.url, this.options.connection);
 
         // add events

@@ -1,4 +1,5 @@
 import * as OSMClient from 'opensensemap-client';
+import fs from 'fs-extra';
 
 export default class OpenSenseMap extends MODULECLASS {
     constructor(parent) {
@@ -9,16 +10,19 @@ export default class OpenSenseMap extends MODULECLASS {
             this.debug = false;
 
             this.client = OSMClient;
-            this.tickRate = parseInt(OPENSENSEMAP_TICKRATE) || 1000;
+            this.tickRate = parseInt(`${OPENSENSEMAP_TICKRATE}` || 1000);
+            this.sensorsDataFile = `${CONF.path}/opensensemap.json`;
 
             // the box id
-            this.id = OPENSENSEMAP_ID || 'change!me';
+            this.id = `${OPENSENSEMAP_ID}` || 'change!me';
 
             // the authentication token
-            this.token = OPENSENSEMAP_TOKEN || 'change!me';
+            this.token = `${OPENSENSEMAP_TOKEN}` || 'change!me';
+
+            LOG(this.label, 'INIT', '| DEBUG:', this.debug);
 
             // the sensors from the config
-            this.sensors = OPENSENSEMAP_SENSORS.split(',')
+            /*this.sensors = OPENSENSEMAP_SENSORS.split(',')
                 .map(sensor => {
                         if (sensor.split("").includes(':')) {
                             const s = sensor.split(':');
@@ -32,20 +36,24 @@ export default class OpenSenseMap extends MODULECLASS {
                         }
                     }
                 )
-                .filter(sensor => sensor ? sensor : null);
+                .filter(sensor => sensor ? sensor : null);*/
 
-            APP.MQTT.client.on('message', (topic, buffer) => this.message(topic, buffer));
 
             this.client
                 .getBox(this.id)
-                .then(data => resolve(this))
+                .then(() => this.load())
+                .then(() => {
+                    this.debug ? LOG(this.label, this.sensors) : null;
+                    APP.MQTT.client.on('message', (topic, buffer) => this.message(topic, buffer));
+                    resolve(this);
+                })
                 .catch((e) => ERROR(this.label, e));
 
             this.timer = setInterval(() => {
                 this.sendAll();
             }, this.tickRate);
 
-            resolve(this);
+            //resolve(this);
         });
     }
 
@@ -53,16 +61,19 @@ export default class OpenSenseMap extends MODULECLASS {
         const now = Date.now() / 1000;
         const data = [];
         this.sensors.forEach(sensor => {
-            const dead = sensor.sendTimestamp + sensor.age;
+            !sensor.sendTimestamp ? sensor.sendTimestamp = 0 : null;
+            const dead = parseInt(sensor.sendTimestamp) + parseInt(sensor.age);
 
             if (now >= dead && sensor.value) {
                 sensor.sendTimestamp = now;
                 data.push({
-                    sensor: sensor.sensorId,
+                    sensor: sensor.id,
                     value: sensor.value
                 });
             }
         });
+
+        this.debug ? LOG(this.label, 'SEND ALL', data) : null;
 
         // fire
         if (data.length > 0) {
@@ -92,6 +103,19 @@ export default class OpenSenseMap extends MODULECLASS {
         // set the value in the sensors array
         const sensor = this.sensors.filter(s => s.topic === topic)[0];
         sensor.value = value;
+    }
+
+    load() {
+        return new Promise((resolve, reject) => {
+            this.debug ? LOG(this.label, 'LOAD', this.sensorsDataFile) : null;
+
+            fs.readFile(this.sensorsDataFile).then((data) => {
+                if (data) {
+                    this.sensors = JSON.parse(data.toString());
+                    resolve();
+                }
+            });
+        });
     }
 
 }

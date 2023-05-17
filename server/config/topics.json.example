@@ -10,7 +10,7 @@
         ]
     },
     {
-        "topic": "sensors/outdoor/dewpoint",
+        "topic": "sensors/dewpoint",
         "label": "Taupunkt Außen",
         "calculator": "dewpoint",
         "source": {
@@ -19,7 +19,7 @@
         }
     },
     {
-        "topic": "sensors/outdoor/wetbulb",
+        "topic": "sensors/wetbulb",
         "label": "Kühlgrenztemperatur Außen",
         "calculator": "wetbulb",
         "source": {
@@ -29,20 +29,31 @@
         }
     },
     {
-        "topic": "sensors/basement/humidity/absolute",
+        "topic": "sensors/outdoor/basement/own/humidity/absolute",
         "label": "Absolute Luftfeuchtigkeit Keller",
         "calculator": "absolutehumidity",
         "source": {
             "temperature": "sensors/outdoor/basement/own/temperature",
-            "humidity": "sensors/outdoor/basement/own/humidity"
+            "humidity": "sensors/outdoor/basement/own/humidity",
+            "pressure": "sensors/pressure"
         }
     },
     {
-        "topic": "sensors/room/living/window/right/contact",
+        "topic": "sensors/outdoor/air/volume",
+        "label": "Spezifische Volumen feuchter Luft",
+        "calculator": "moistairvolume",
+        "source": {
+            "temperature": "sensors/outdoor/temperature/average",
+            "humidity": "sensors/outdoor/humidity/absolute",
+            "pressure": "sensors/pressure"
+        }
+    },
+    {
+        "topic": "sensors/room/living/window/hintenrechts/contact",
         "label": "Fenster-Kontakt Wohnzimmer hinten rechts",
         "calculator": "maptopic",
         "source": "zigbee/Fenster 1/contact",
-        "transform": "bool",
+        "transform": "string-boolean",
         "precision": 0
     }
 ]

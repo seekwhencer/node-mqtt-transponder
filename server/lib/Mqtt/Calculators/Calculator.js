@@ -4,10 +4,19 @@ export default class Calculator extends MODULECLASS {
     constructor(parent, options) {
         super(parent, options);
         this.label = 'CALCULATOR';
-        this.debug = this.parent.debug;
+        this.debug = false; //this.parent.debug;
 
         this.pm = new Psychrometrics();
         this.pm.SetUnitSystem(this.pm.SI);
+        this.precision = 4;
+    }
+
+    calculate() {
+        this.debug ? LOG(this.label, 'CALCULATE FOR:', this.topic) : null;
+    }
+
+    publish() {
+        this.parent.publish(this.value);
     }
 
     get value() {
@@ -16,13 +25,13 @@ export default class Calculator extends MODULECLASS {
 
     set value(val) {
         if (typeof val === 'number') {
-            this._value = val.toPrecision(this.parent.data.precision || 4);
+            this._value = val.toPrecision(this.parent.data.precision || this.precision);
         } else {
             this._value = val;
         }
 
-        // elevate the value to the virtual topic
-        this.parent.value = this.value;
+        // don't set the value: publish it, receive it, add it
+        this.publish();
     }
 
     get topic() {
@@ -46,6 +55,22 @@ export default class Calculator extends MODULECLASS {
     }
 
     set values(val) {
+        // do nothing
+    }
+
+    get transform() {
+        return this.parent.data.transform;
+    }
+
+    set transform(val){
+        // do nothing
+    }
+
+    get topicsIncoming() {
+        return this.parent.source.topics;
+    }
+
+    set topicsIncoming(val) {
         // do nothing
     }
 }

@@ -5,6 +5,7 @@ import WetBulbHuman from './WetBulbHuman.js'
 import AbsoluteHumidity from "./AbsoluteHumidity.js";
 import MapTopic from "./MapTopic.js";
 import MoistAirVolume from "./MoistAirVolume.js";
+import MoistAirDensity from "./MoistAirDensity.js";
 
 export {
     Average as average,
@@ -13,5 +14,6 @@ export {
     WetBulbHuman as wetbulbhuman,
     AbsoluteHumidity as absolutehumidity,
     MapTopic as maptopic,
-    MoistAirVolume as moistairvolume
+    MoistAirVolume as moistairvolume,
+    MoistAirDensity as moistairdensity
 }

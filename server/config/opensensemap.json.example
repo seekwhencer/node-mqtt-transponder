@@ -1,0 +1,7 @@
+[
+  {
+    "id" : "REPLACE SENSOR ID FROM OPEN SOURCE MAP",
+    "topic" : "sensors/outdoor/temperature/average",
+    "age" : 60
+  }
+]

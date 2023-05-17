@@ -9,7 +9,9 @@ export default class WebServer extends MODULECLASS {
         super(parent);
         return new Promise((resolve, reject) => {
             this.label = 'WEBSERVER';
-            LOG(this.label, 'INIT');
+            this.debug = false;
+
+            LOG(this.label, 'INIT', '| DEBUG:', this.debug);
 
             this.parent = parent;
             this.port = SERVER_PORT || 3000;

@@ -1,3 +1,5 @@
 .env
 server/config/default.conf
-server/config/virtualtopics.json
+server/config/topics.json
+server/config/excludes.json
+server/config/opensensemap.json
